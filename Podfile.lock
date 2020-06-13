@@ -1,0 +1,35 @@
+PODS:
+  - IVCollectionKit (0.9.11)
+  - SDWebImage (5.7.4):
+    - SDWebImage/Core (= 5.7.4)
+  - SDWebImage/Core (5.7.4)
+  - SnapKit (5.0.1)
+
+DEPENDENCIES:
+  - IVCollectionKit (from `https://github.com/ivedeneev/CollectionKit`, branch `1.0.0`)
+  - SDWebImage
+  - SnapKit
+
+SPEC REPOS:
+  trunk:
+    - SDWebImage
+    - SnapKit
+
+EXTERNAL SOURCES:
+  IVCollectionKit:
+    :branch: 1.0.0
+    :git: https://github.com/ivedeneev/CollectionKit
+
+CHECKOUT OPTIONS:
+  IVCollectionKit:
+    :commit: c51066aea345461208f934111437d7cf89dbd5ca
+    :git: https://github.com/ivedeneev/CollectionKit
+
+SPEC CHECKSUMS:
+  IVCollectionKit: 5e1a2062fdfc3963750fce35f4625895f9ce1c58
+  SDWebImage: 48b88379b798fd1e4298f95bb25d2cdabbf4deb3
+  SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
+
+PODFILE CHECKSUM: 9cfd0d5bdd89be2c0fc468e2a183db6eef3a2f0b
+
+COCOAPODS: 1.9.1
