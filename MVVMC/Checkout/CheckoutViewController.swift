@@ -99,7 +99,25 @@ final class CheckoutViewController: UIViewController {
         
         let positionsArray = [position1, position2, position3]
         
-        let positionsVm = positionsArray.map { CheckoutPositionCellViewModel(position: $0) }
+        let positionsVm = positionsArray.map { position -> CheckoutPositionCellViewModel in
+            let vm = CheckoutPositionCellViewModel(position: position)
+            vm.$action
+                .compactMap { $0 }
+                .sink { [weak vm] (action) in
+                    switch action {
+                    case .changeCount(let count):
+                        vm?.isLoading = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            vm?.count = count
+                            vm?.isLoading = false
+                        }
+                    case .showActions:
+                        print("showActions")
+                    }
+                    vm?.action = nil
+                }.store(in: &bag)
+            return vm
+        }
         let totalSignal = positionsVm.map { pos in
             pos.$count.map { $0 * pos.price } }
             .combineLatest.map { $0.reduce(0, +) }

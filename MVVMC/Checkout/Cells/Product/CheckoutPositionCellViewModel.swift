@@ -17,7 +17,14 @@ final class CheckoutPositionCellViewModel: Hashable {
         hasher.combine(id)
     }
     
+    enum Action {
+        case changeCount(Int)
+        case showActions
+    }
+    
+    @Published var action: Action?
     @Published var count: Int = 1
+    @Published var isLoading = false
     @Published var showActions: Void = ()
     let id: String
     let title: String

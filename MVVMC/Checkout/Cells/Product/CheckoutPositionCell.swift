@@ -33,6 +33,9 @@ final class CheckoutPositionCell: UICollectionViewCell {
     private let totalPriceLabel = UILabel()
     private var cancellables = Set<AnyCancellable>()
     private let actionsButton = UIButton()
+    private let countTitleLabel = UILabel()
+    private let countValueLabel = UILabel()
+    private let activityIndicator = UIActivityIndicatorView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -63,21 +66,45 @@ final class CheckoutPositionCell: UICollectionViewCell {
             make.trailing.equalTo(actionsButton.snp.leading).offset(8)
         }
         
+        addSubview(countTitleLabel)
+        countTitleLabel.font = .systemFont(ofSize: 15, weight: .regular)
+        countTitleLabel.text = "Количество:"
+        countTitleLabel.snp.makeConstraints { (make) in
+            make.leading.equalTo(titleLabel)
+            make.top.equalTo(titleLabel.snp.bottom).offset(16)
+        }
+        
+        addSubview(countValueLabel)
+        countValueLabel.font = .systemFont(ofSize: 15, weight: .medium)
+        countValueLabel.textAlignment = .right
+        countValueLabel.snp.makeConstraints { (make) in
+            make.leading.equalTo(countTitleLabel.snp.trailing).offset(8)
+            make.bottom.equalTo(countTitleLabel)
+        }
+        
+        addSubview(activityIndicator)
+        activityIndicator.snp.makeConstraints { (make) in
+            make.centerY.equalTo(countValueLabel)
+            make.centerX.equalTo(countValueLabel).offset(2)
+        }
+        
+        
         addSubview(stepper)
         stepper.stepValue = 1
         stepper.minimumValue = 1
         stepper.snp.makeConstraints { (make) in
-            make.top.equalTo(imageView.snp.bottom).offset(10)
-            make.centerX.equalTo(imageView)
+//            make.leading.equalTo(countValueLabel.snp.trailing).offset(10)
+            make.centerY.equalTo(countTitleLabel)
+            make.trailing.equalToSuperview().offset(-16)
         }
         
         addSubview(totalPriceLabel)
         totalPriceLabel.font = .systemFont(ofSize: 20, weight: .light)
         totalPriceLabel.textAlignment = .right
         totalPriceLabel.snp.makeConstraints { (make) in
-            make.leading.equalTo(stepper.snp.trailing).offset(10)
+            make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().offset(-16)
-            make.centerY.equalTo(stepper)
+            make.top.equalTo(countTitleLabel.snp.bottom).offset(16)
         }
         
         addSeparator()
@@ -95,18 +122,30 @@ final class CheckoutPositionCell: UICollectionViewCell {
 extension CheckoutPositionCell: ConfigurableCollectionItem {
     func configure(item: CheckoutPositionCellViewModel) {
         titleLabel.text = item.title
-        item.totalPrice.assign(to: \.text, on: totalPriceLabel).store(in: &cancellables)
+        item.totalPrice
+            .assign(to: \.text, on: totalPriceLabel)
+            .store(in: &cancellables)
+        
         imageView.sd_setImage(with: URL(string: item.imageLink), completed: nil)
         
         stepper.publisher(for: .valueChanged)
-            .map { Int($0.value) }
-            .assign(to: \.count, on: item)
+            .map { CheckoutPositionCellViewModel.Action.changeCount(Int($0.value)) }
+            .assign(to: \.action, on: item)
             .store(in: &cancellables)
         
         actionsButton.publisher(for: .touchUpInside)
             .map { _ in () }
             .assign(to: \.showActions, on: item)
             .store(in: &cancellables)
+        
+        item.$count.map { String($0) as String? }
+            .assign(to: \.text, on: countValueLabel)
+            .store(in: &cancellables)
+        
+        item.$isLoading.sink { [weak self] (isLoading) in
+            self?.countValueLabel.isHidden = isLoading
+            isLoading ? self?.activityIndicator.startAnimating() : self?.activityIndicator.stopAnimating()
+        }.store(in: &cancellables)
     }
     
     static func estimatedSize(item: CheckoutPositionCellViewModel, boundingSize: CGSize, in section: AbstractCollectionSection) -> CGSize {
