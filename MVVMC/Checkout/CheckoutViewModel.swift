@@ -39,6 +39,8 @@ final class CheckoutViewModel: CheckoutViewModelProtocol {
     @Published var selectedAddress: String?
     @Published var selectedCity: City?
     @Published var selectedStreet: Street?
+    @Published var home: String?
+    @Published var flat: String?
     @Published var deliveryMethod: DeliveryMethod = .delivery
     @Published var selectedAction: (CheckoutPositionAction, String)?
     

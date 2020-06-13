@@ -75,11 +75,12 @@ final class TextSelectViewModel: Hashable {
     let title: String
     let isEnabled: Bool
     let keyboardType: UIKeyboardType
-    let id: String = UUID().uuidString
+    let id: String
     @Published var text: String?
     
-    init(title: String, text: String? = nil, keyboardType: UIKeyboardType = .default, isEnabled: Bool = true) {
+    init(id: String = UUID().uuidString, title: String, text: String? = nil, keyboardType: UIKeyboardType = .default, isEnabled: Bool = true) {
         self.title = title
+        self.id = id
         self.text = text
         self.isEnabled = isEnabled
         self.keyboardType = keyboardType

@@ -118,7 +118,7 @@ final class CheckoutViewController: UIViewController {
         
         contactSection.headerItem = CollectionHeaderFooterView<CollectionHeader>(item: "Контактные данные", kind: UICollectionView.elementKindSectionHeader)
         
-        let name = TextSelectViewModel(title: "Имя", text: viewModel.name, isEnabled: true)
+        let name = TextSelectViewModel(id: "name", title: "Имя", text: viewModel.name, isEnabled: true)
         contactSection += CollectionItem<FilterTextValueCell>(item: name)
         
         name.$text
@@ -126,8 +126,12 @@ final class CheckoutViewController: UIViewController {
             .assign(to: \.name, on: viewModel)
             .store(in: &bag)
         
-        let phone = TextSelectViewModel(title: "Номер телефона", keyboardType: .numberPad, isEnabled: true)
+        let phone = TextSelectViewModel(id: "phone", title: "Номер телефона", text: viewModel.phone, keyboardType: .numberPad, isEnabled: true)
         contactSection += CollectionItem<FilterTextValueCell>(item: phone)
+        phone.$text
+            .dropFirst()
+            .assign(to: \.phone, on: viewModel)
+            .store(in: &bag)
         
         deliverySection.headerItem = CollectionHeaderFooterView<CollectionHeader>(item: "Способ доставки", kind: UICollectionView.elementKindSectionHeader)
         deliverySection += CollectionItem<DeliveryMethodCell>(item: deliveryVm)
@@ -144,6 +148,15 @@ final class CheckoutViewController: UIViewController {
                 self?.viewModel.showStreetsSelect()
             }
             
+            let houseVm = TextSelectViewModel(title: "Дом", text: viewModel.home, keyboardType: .numberPad, isEnabled: true)
+            deliverySection += CollectionItem<FilterTextValueCell>(item: houseVm)
+            
+            let flatVm = TextSelectViewModel(title: "Номер квартиры", text: viewModel.flat, keyboardType: .numberPad, isEnabled: true)
+            deliverySection += CollectionItem<FilterTextValueCell>(item: flatVm)
+            
+            let deliveryTime = TextSelectViewModel(title: "Желаемые дата и время доставки", isEnabled: false)
+            deliverySection += CollectionItem<FilterTextValueCell>(item: deliveryTime)
+            
             viewModel.$selectedCity
                 .map { $0?.title }
                 .assign(to: \.text, on: cityVm)
@@ -154,19 +167,23 @@ final class CheckoutViewController: UIViewController {
                 .assign(to: \.text, on: streetVm)
                 .store(in: &bag)
             
-            let houseVm = TextSelectViewModel(title: "Дом", keyboardType: .numberPad, isEnabled: true)
-            deliverySection += CollectionItem<FilterTextValueCell>(item: houseVm)
+            houseVm.$text
+                .dropFirst()
+                .assign(to: \.home, on: viewModel)
+                .store(in: &bag)
+
+            flatVm.$text
+                .dropFirst()
+                .assign(to: \.flat, on: viewModel)
+                .store(in: &bag)
             
-            let flatVm = TextSelectViewModel(title: "Номер квартиры", keyboardType: .numberPad, isEnabled: true)
-            deliverySection += CollectionItem<FilterTextValueCell>(item: flatVm)
-            
-            let deliveryTime = TextSelectViewModel(title: "Желаемые дата и время доставки", isEnabled: false)
-            deliverySection += CollectionItem<FilterTextValueCell>(item: deliveryTime)
         } else {
             let textVm = TextSelectViewModel(title: "Выберите магазин", isEnabled: false)
+            
             viewModel.$selectedAddress
                 .assign(to: \.text, on: textVm)
                 .store(in: &bag)
+            
             deliverySection += CollectionItem<FilterTextValueCell>(item: textVm).onSelect { [weak self] (_) in
                 self?.viewModel.showMap = ()
             }
@@ -238,3 +255,11 @@ final class CheckoutViewController: UIViewController {
             .store(in: &bag)
     }
 }
+
+
+//infix operator <->
+//func <-><Element>(lhs: Published<Element>.Publisher, rhs: Published<Element>.Publisher) -> Cancellable {
+//    let bag = Set<Cancellable>()
+//
+//    lhs.assign(to: <#T##ReferenceWritableKeyPath<Root, Element>#>, on: <#T##Root#>)
+//}
