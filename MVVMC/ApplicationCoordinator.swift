@@ -36,7 +36,7 @@ final class TabbarCoordinator: BaseCoordinator<Void> {
         let tabbarViewController = UITabBarController()
         
         let checkout = CheckoutCoordinator(nc: UINavigationController())
-        let rootControllers = [checkout.rootViewController].compactMap { $0 }
+        let rootControllers = [checkout.rootViewController, VC()].compactMap { $0 }
         tabbarViewController.setViewControllers(rootControllers, animated: false)
         
         window?.rootViewController = tabbarViewController
@@ -46,5 +46,40 @@ final class TabbarCoordinator: BaseCoordinator<Void> {
         
         
         return .empty()
+    }
+}
+
+
+final class VC: UIViewController {
+    let stacView = UIStackView()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        view.addSubview(stacView)
+        view.backgroundColor = .systemBackground
+        
+        stacView.snp.makeConstraints { (make) in
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalToSuperview().multipliedBy(0.5)
+        }
+        
+        stacView.spacing = 10
+        stacView.distribution = .fillEqually
+        
+        let red = UIView()
+        red.backgroundColor = .systemRed
+        
+        let blue = UIView()
+        blue.backgroundColor = .systemBlue
+        
+        stacView.addArrangedSubview(red)
+        stacView.addArrangedSubview(blue)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            UIView.animate(withDuration: 0.25) {
+                red.isHidden = true
+            }
+        }
     }
 }

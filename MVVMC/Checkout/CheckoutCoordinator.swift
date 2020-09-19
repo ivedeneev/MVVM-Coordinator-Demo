@@ -24,35 +24,79 @@ final class CheckoutCoordinator: BaseCoordinator<Void> {
         
         let vc = CheckoutViewController()
         vc.tabBarItem = UITabBarItem(title: "Корзина", image: .actions, selectedImage: .actions)
-        let vm = CheckoutViewModel()
-        vc.viewModel = vm
+        let viewModel = CheckoutViewModel()
+        vc.viewModel = viewModel
         
         (rootViewController as? UINavigationController)?.setViewControllers([vc], animated: false)
         
-        vm.$showMap
+        viewModel.$showMap
             .dropFirst()
             .flatMap(showMap)
             .compactMap { $0.title }
-            .assign(to: \.selectedAddress, on: vm)
+            .assign(to: \.selectedAddress, on: viewModel)
             .store(in: &cancellables)
         
-        vm.showActions
+        viewModel.showActions
             .flatMap(showActions)
-            .assign(to: \.selectedAction, on: vm)
+            .assign(to: \.selectedAction, on: viewModel)
             .store(in: &cancellables)
         
-        vm.showCities
+        viewModel.showCities
             .flatMap(showCitiesSerarch)
             .compactMap { $0 }
-            .assign(to: \.selectedCity, on: vm)
+            .assign(to: \.selectedCity, on: viewModel)
             .store(in: &cancellables)
         
-        vm.showStreets
+        viewModel.showStreets
             .flatMap(showStreets)
-            .assign(to: \.selectedStreet, on: vm)
+            .assign(to: \.selectedStreet, on: viewModel)
+            .store(in: &cancellables)
+        
+        viewModel.showProduct
+            .flatMap(showProduct)
+            .sink(receiveValue: { (productFlowResult) in
+                print("showProduct", productFlowResult)
+            })
+            .store(in: &cancellables)
+        
+        viewModel.selectDiscount
+            .flatMap(selectDiscoundAndAutorizeIfNeeded)
+            .sink(receiveValue: { [unowned self] (result) in
+                switch result {
+                case .discount(let discount):
+                    (self.rootViewController as! UINavigationController)
+                        .pushViewController(UITableViewController(), animated: true)
+                case .cancel:
+                    print("[discount flow result]".uppercased(), result)
+                }
+                
+            })
             .store(in: &cancellables)
         
         return .empty()
+    }
+    
+    private func selectDiscoundAndAutorizeIfNeeded() -> AnyPublisher<DiscountFlowResult, Never> {
+        let c = AuthCoordinator(rootViewController)
+        return coordinate(to: c).flatMap { result -> AnyPublisher<DiscountFlowResult, Never> in
+            switch result {
+            case .value:
+                return Just(.discount(.init(value: 10)))
+                    .delay(for: 0.3, scheduler: DispatchQueue.main)
+                    .eraseToAnyPublisher()
+                
+            case .dismiss:
+                return Just(DiscountFlowResult.cancel).eraseToAnyPublisher()
+            }
+        }.eraseToAnyPublisher()
+    }
+    
+    private func showProduct(id: String) -> AnyPublisher<ProductFlowResult, Never> {
+        coordinate(to: ProductCoordinator(
+            rootViewController as? UINavigationController,
+            productId: id,
+            deeplink: nil)
+        )
     }
     
     private func showMap() -> AnyPublisher<MapFlowResult, Never> {
@@ -102,7 +146,7 @@ final class CheckoutCoordinator: BaseCoordinator<Void> {
         .eraseToAnyPublisher()
     }
     
-    private func showShouldSelectCityAlert()/* -> AnyPublisher<Void, Never>*/ {
+    private func showShouldSelectCityAlert() {
         let ac = UIAlertController(title: "Ошибка", message: "Выберите сначала город", preferredStyle: .alert)
         ac.addAction(UIAlertAction(title: "Понятно", style: .cancel, handler: nil))
         rootViewController?.present(ac, animated: true, completion: nil)
@@ -126,4 +170,14 @@ enum CheckoutPositionAction: CaseIterable {
             return .destructive
         }
     }
+}
+
+enum DiscountFlowResult {
+    case discount(Discount)
+    case cancel
+}
+
+enum CommonModalFlowResult<T> {
+    case value(T)
+    case dismiss
 }

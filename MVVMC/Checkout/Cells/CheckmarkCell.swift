@@ -58,7 +58,16 @@ extension CheckmarkCell: ConfigurableCollectionItem {
     }
 }
 
-final class CheckmarkCellViewModel {
+final class CheckmarkCellViewModel: Hashable {
+    static func == (lhs: CheckmarkCellViewModel, rhs: CheckmarkCellViewModel) -> Bool {
+        lhs.paymentMethod == rhs.paymentMethod && lhs.isSelected == rhs.isSelected
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(paymentMethod)
+        hasher.combine(isSelected)
+    }
+    
     @Published var isSelected: Bool
     var paymentMethod: PaymentPethod
     

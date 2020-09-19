@@ -10,17 +10,25 @@ import UIKit
 import Combine
 
 
-class NavigationController: UINavigationController, UIAdaptivePresentationControllerDelegate {
+class ModalNavigationController: UINavigationController, UIAdaptivePresentationControllerDelegate {
     
-    lazy var didDismiss = _didDismiss.eraseToAnyPublisher()
-    private let _didDismiss = PassthroughSubject<Void, Never>()
+    lazy var didDismissManually = _dismissMaually.eraseToAnyPublisher()
+    private let _dismissMaually = PassthroughSubject<Void, Never>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         presentationController?.delegate = self
+        navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .close, target: self, action: #selector(close))
     }
     
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        _didDismiss.send()
+        _dismissMaually.send()
+    }
+    
+    @objc func close() {
+        dismiss(animated: true, completion: { [unowned self] in
+            self._dismissMaually.send()
+            self._dismissMaually.send(completion: .finished)
+        })
     }
 }

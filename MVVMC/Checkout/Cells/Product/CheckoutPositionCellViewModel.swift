@@ -6,6 +6,7 @@
 //  Copyright © 2020 AGIMA. All rights reserved.
 //
 
+import Foundation
 import Combine
 
 final class CheckoutPositionCellViewModel: Hashable {
@@ -25,7 +26,6 @@ final class CheckoutPositionCellViewModel: Hashable {
     @Published var action: Action?
     @Published var count: Int = 1
     @Published var isLoading = false
-    @Published var showActions: Void = ()
     let id: String
     let title: String
     let size: String

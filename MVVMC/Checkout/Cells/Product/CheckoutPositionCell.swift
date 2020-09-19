@@ -134,8 +134,8 @@ extension CheckoutPositionCell: ConfigurableCollectionItem {
             .store(in: &cancellables)
         
         actionsButton.publisher(for: .touchUpInside)
-            .map { _ in () }
-            .assign(to: \.showActions, on: item)
+            .map { _ in CheckoutPositionCellViewModel.Action.showActions }
+            .assign(to: \.action, on: item)
             .store(in: &cancellables)
         
         item.$count.map { String($0) as String? }

@@ -16,7 +16,6 @@ final class CollectionHeader: UICollectionReusableView {
         super.init(frame: frame)
         
         addSubview(label)
-        label.textColor = .darkText
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4).isActive = true

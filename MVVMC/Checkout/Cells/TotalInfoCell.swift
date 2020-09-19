@@ -46,6 +46,7 @@ final class TotalInfoCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         cancellable?.cancel()
+        cancellable = nil
     }
     
     required init?(coder: NSCoder) {
@@ -66,7 +67,18 @@ extension TotalInfoCell: ConfigurableCollectionItem {
     }
 }
 
-final class TotalInfoCellViewModel {
+final class TotalInfoCellViewModel: Hashable {
+    static func == (lhs: TotalInfoCellViewModel, rhs: TotalInfoCellViewModel) -> Bool {
+        rhs.title == lhs.title && rhs.value == lhs.value
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+        if let v = value {
+            hasher.combine(v)
+        }
+    }
+    
     @Published var title: String
     @Published var value: NSAttributedString?
     let backgroundColor: UIColor = .systemGray5
@@ -110,7 +122,7 @@ extension TotalClosingCell: ConfigurableCollectionItem {
     }
 }
 
-enum ClosingCellType {
+enum ClosingCellType: Hashable {
     case head(UIColor)
     case tail(UIColor)
 }

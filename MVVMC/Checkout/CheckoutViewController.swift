@@ -21,7 +21,7 @@ final class CheckoutViewController: UIViewController {
     let positionsSection = CollectionSection()
     let contactSection = CollectionSection()
     let deliverySection = CollectionSection()
-    let promocodeSection = CollectionSection()
+    let discountSection = CollectionSection()
     let paymentSection = CollectionSection()
     let summarySection = CollectionSection()
     
@@ -40,27 +40,26 @@ final class CheckoutViewController: UIViewController {
         collectionView.keyboardDismissMode = .onDrag
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
         navigationController?.navigationBar.prefersLargeTitles = true
-//        title = "Корзина"
         navigationItem.title = "Корзина"
         
         director += positionsSection
         director += contactSection
         director += deliverySection
-        director += promocodeSection
+        director += discountSection
         director += paymentSection
         director += summarySection
-        
-        configure()
-        
-        deliveryVm.$deliveryMethod
-            .dropFirst()
-            .sink { (method) in
-                self.viewModel.deliveryMethod = method
-                self.configure()
-            }.store(in: &bag)
-        
-        
+
         navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .action, target: self, action: #selector(action))
+        
+//        let refresh = UIRefreshControl()
+//        collectionView.refreshControl = refresh
+//        refresh.publisher(for: .valueChanged).sink { (r) in
+//            print("dsf")
+//        }.store(in: &bag)
+        
+        viewModel.$positions.sink { [weak self] (_) in
+            self?.configure()
+        }.store(in: &bag)
     }
     
     override func viewSafeAreaInsetsDidChange() {
@@ -74,63 +73,43 @@ final class CheckoutViewController: UIViewController {
     }
     
     func configure() {
+        bag.forEach { $0.cancel() }
+        bag.removeAll()
+        
         positionsSection.removeAll()
         contactSection.removeAll()
         deliverySection.removeAll()
-        promocodeSection.removeAll()
+        discountSection.removeAll()
         paymentSection.removeAll()
         summarySection.removeAll()
         
-        let position1 = CheckoutPosition(id: "1",
-                                        product: Product(id: "1", title: "Платье розовое", image: "https://sun1-24.userapi.com/jbYWyhP1JfU_q9c2sewgFsMrmn6_nMYxpC4Cww/LPfEvALAHxM.jpg", price: 4289),
-                                        count: 1,
-                                        size: .xl)
-        
-        let position2 = CheckoutPosition(id: "2",
-                                        product: Product(id: "2", title: "Шуба опасная", image: "https://sun1-14.userapi.com/c856036/v856036867/23ceef/EPJDNyoDam0.jpg", price: 299),
-                                        count: 1,
-                                        size: .xl)
-        
-        let position3 = CheckoutPosition(id: "3",
-                                        product: Product(id: "3", title: "Платье олдскул HFH", image: "https://sun1-14.userapi.com/c858024/v858024867/20ce0c/1P06GLqetzc.jpg", price: 11999),
-                                        count: 1,
-                                        size: .xl)
-        
-        
-        let positionsArray = [position1, position2, position3]
-        
-        let positionsVm = positionsArray.map { position -> CheckoutPositionCellViewModel in
+        let positionsVm = viewModel.positions.map { position -> CheckoutPositionCellViewModel in
             let vm = CheckoutPositionCellViewModel(position: position)
             vm.$action
                 .compactMap { $0 }
-                .sink { [weak vm] (action) in
+                .sink { [weak vm, weak self] (action) in
                     switch action {
                     case .changeCount(let count):
+                        //TODO: refactor
                         vm?.isLoading = true
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             vm?.count = count
                             vm?.isLoading = false
                         }
                     case .showActions:
-                        print("showActions")
+                        self?.viewModel.showActions(for: position.id)
                     }
                     vm?.action = nil
                 }.store(in: &bag)
             return vm
         }
-        let totalSignal = positionsVm.map { pos in
-            pos.$count.map { $0 * pos.price } }
-            .combineLatest.map { $0.reduce(0, +) }
         
-        let actions = positionsVm.map { pos in
-            pos.$showActions.dropFirst().map { pos.id }
+        positionsSection += positionsVm.map { vm in
+            CollectionItem<CheckoutPositionCell>(item: vm).onSelect { [unowned self] ip in
+                self.viewModel.selectPosition(at: ip.row)
+//                _ = self.viewModel.selectProduct.receive(vm.id)
+            }
         }
-        
-        Publishers.MergeMany(actions).sink { [weak self] (positionId) in
-            self?.viewModel.showActions(for: positionId)
-        }.store(in: &bag)
-        
-        positionsSection += positionsVm.map { CollectionItem<CheckoutPositionCell>(item: $0) }
         
         deliverySection.insetForSection = .init(top: 6, left: 0, bottom: 0, right: 0)
         
@@ -153,6 +132,13 @@ final class CheckoutViewController: UIViewController {
         
         deliverySection.headerItem = CollectionHeaderFooterView<CollectionHeader>(item: "Способ доставки", kind: UICollectionView.elementKindSectionHeader)
         deliverySection += CollectionItem<DeliveryMethodCell>(item: deliveryVm)
+        
+        deliveryVm.$deliveryMethod
+            .dropFirst()
+            .sink { (method) in
+                self.viewModel.deliveryMethod = method
+                self.configure()
+            }.store(in: &bag)
         
         if viewModel.deliveryMethod == .delivery {
             let cityVm = TextSelectViewModel(title: "Город", isEnabled: false)
@@ -194,7 +180,6 @@ final class CheckoutViewController: UIViewController {
                 .dropFirst()
                 .assign(to: \.flat, on: viewModel)
                 .store(in: &bag)
-            
         } else {
             let textVm = TextSelectViewModel(title: "Выберите магазин", isEnabled: false)
             
@@ -207,12 +192,33 @@ final class CheckoutViewController: UIViewController {
             }
         }
         
-        let promocode = TextSelectViewModel(title: "Промокод", isEnabled: true)
-        promocodeSection.insetForSection = .init(top: 20, left: 0, bottom: 20, right: 0)
-        promocodeSection += CollectionItem<FilterTextValueCell>(item: promocode)
         
-        paymentSection.headerItem = CollectionHeaderFooterView<CollectionHeader>(item: "Способ оплаты",
-                                                                                        kind: UICollectionView.elementKindSectionHeader)
+        discountSection.headerItem =
+            CollectionHeaderFooterView<CollectionHeader>(
+                item: "Промокоды и скидки",
+                kind: UICollectionView.elementKindSectionHeader
+        )
+        
+        let promocode = TextSelectViewModel(title: "Промокод", isEnabled: true)
+        discountSection += CollectionItem<FilterTextValueCell>(item: promocode)
+        discountSection.lineSpacing = 8
+        let hasDiscount = false
+        
+        if hasDiscount {
+            
+        } else {
+            discountSection += CollectionItem<CommonTextCell>(item: "Выберете скидку")
+                .onSelect { [unowned self] _ in
+                    self.viewModel.showSelectDiscount()
+                }
+        }
+        
+        
+        paymentSection.headerItem =
+            CollectionHeaderFooterView<CollectionHeader>(
+                item: "Способ оплаты",
+                kind: UICollectionView.elementKindSectionHeader
+        )
         
         let pay1 = CheckmarkCellViewModel(method: .applePay, isSelected: currentPaymentMethod == .applePay)
         let pay2 = CheckmarkCellViewModel(method: .card, isSelected: currentPaymentMethod == .card)
@@ -224,9 +230,10 @@ final class CheckoutViewController: UIViewController {
             CollectionItem<CheckmarkCell>(item: vm)
                 .onSelect({ [weak self] (ip) in
                     self?.currentPaymentMethod = vm.paymentMethod
-                    paymentMethods.enumerated().forEach { (el) in
-                        el.element.isSelected = el.offset == ip.item
-                    }
+                    self?.configure()
+//                    paymentMethods.enumerated().forEach { (el) in
+//                        el.element.isSelected = el.offset == ip.item
+//                    }
                 })
         }
         
@@ -234,8 +241,14 @@ final class CheckoutViewController: UIViewController {
         
         var total = Array<TotalInfoCellViewModel>()
         
-        let positons = TotalInfoCellViewModel(title: "1 позиция на сумму",
-                                              value: .init(string: "1337 Р",
+        let totalSignal = positionsVm.map { pos in
+            pos.$count.map { $0 * pos.price }
+        }
+        .combineLatest.map { $0.reduce(0, +) }
+        
+        let positionsPrice = viewModel.positions.map { $0.count * $0.product.price }.reduce(0, +)
+        let positons = TotalInfoCellViewModel(title: "\(viewModel.positions.count) позиция на сумму",
+                                              value: .init(string: "\(positionsPrice) Р",
                                                            attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .medium)]))
         
         total.append(positons)
@@ -253,7 +266,7 @@ final class CheckoutViewController: UIViewController {
         
         let totalRow = TotalInfoCellViewModel(
             title: "Всего",
-            value: NSAttributedString(string: String(positionsArray.map { $0.count * $0.product.price }.reduce(0, +)),
+            value: NSAttributedString(string: String(positionsPrice),
                                       attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .bold)])
             )
         
@@ -273,11 +286,3 @@ final class CheckoutViewController: UIViewController {
             .store(in: &bag)
     }
 }
-
-
-//infix operator <->
-//func <-><Element>(lhs: Published<Element>.Publisher, rhs: Published<Element>.Publisher) -> Cancellable {
-//    let bag = Set<Cancellable>()
-//
-//    lhs.assign(to: <#T##ReferenceWritableKeyPath<Root, Element>#>, on: <#T##Root#>)
-//}

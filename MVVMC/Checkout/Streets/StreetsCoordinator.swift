@@ -25,10 +25,10 @@ final class StreetsCoordinator: BaseCoordinator<Street?> {
     
     override func start() -> AnyPublisher<Street?, Never> {
         let vc = StreetsViewController()
-        let nc = NavigationController(rootViewController: vc)
+        let nc = ModalNavigationController(rootViewController: vc)
         let viewModel = StreetsViewModel()
         vc.viewModel = viewModel
-        let dismiss = nc.didDismiss.map { StreetsCoordinationResult.cancel }
+        let dismiss = nc.didDismissManually.map { StreetsCoordinationResult.cancel }
         
         rootViewController?.present(nc, animated: true, completion: nil)
         

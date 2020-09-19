@@ -20,10 +20,13 @@ final class MapCoordinator: BaseCoordinator<MapFlowResult> {
     
     override func start() -> AnyPublisher<MapFlowResult, Never> {
         let vc = MapViewController()
-        rootViewController?.present(UINavigationController(rootViewController: vc), animated: true, completion: nil)
+        rootViewController?.present(
+            UINavigationController(rootViewController: vc),
+            animated: true,
+            completion: nil
+        )
         
-        return vc.subject
-            .eraseToAnyPublisher()
+        return vc.subject.eraseToAnyPublisher()
     }
 }
 

@@ -33,6 +33,11 @@
 		D690B24C249500D30079EE72 /* StreetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D690B24B249500D30079EE72 /* StreetsViewController.swift */; };
 		D690B24E249501520079EE72 /* StreetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D690B24D249501520079EE72 /* StreetsViewModel.swift */; };
 		D690B250249502700079EE72 /* StreetsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D690B24F249502700079EE72 /* StreetsCoordinator.swift */; };
+		D698FD5B251681F900B4A933 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D698FD5A251681F900B4A933 /* ProductViewController.swift */; };
+		D698FD5D251688B400B4A933 /* CommonTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D698FD5C251688B400B4A933 /* CommonTextCell.swift */; };
+		D698FD602516914400B4A933 /* AuthPhoneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D698FD5F2516914400B4A933 /* AuthPhoneController.swift */; };
+		D698FD622516A21A00B4A933 /* AuthCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D698FD612516A21A00B4A933 /* AuthCodeController.swift */; };
+		D698FD642516A24000B4A933 /* AuthCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D698FD632516A24000B4A933 /* AuthCoordinator.swift */; };
 		D6AEA1B7244221330031D4A2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6AEA1B6244221330031D4A2 /* AppDelegate.swift */; };
 		D6AEA1B9244221330031D4A2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6AEA1B8244221330031D4A2 /* SceneDelegate.swift */; };
 		D6AEA1BB244221330031D4A2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6AEA1BA244221330031D4A2 /* ViewController.swift */; };
@@ -74,6 +79,11 @@
 		D690B24B249500D30079EE72 /* StreetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreetsViewController.swift; sourceTree = "<group>"; };
 		D690B24D249501520079EE72 /* StreetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreetsViewModel.swift; sourceTree = "<group>"; };
 		D690B24F249502700079EE72 /* StreetsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreetsCoordinator.swift; sourceTree = "<group>"; };
+		D698FD5A251681F900B4A933 /* ProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewController.swift; sourceTree = "<group>"; };
+		D698FD5C251688B400B4A933 /* CommonTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonTextCell.swift; sourceTree = "<group>"; };
+		D698FD5F2516914400B4A933 /* AuthPhoneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthPhoneController.swift; sourceTree = "<group>"; };
+		D698FD612516A21A00B4A933 /* AuthCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthCodeController.swift; sourceTree = "<group>"; };
+		D698FD632516A24000B4A933 /* AuthCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthCoordinator.swift; sourceTree = "<group>"; };
 		D6AEA1B3244221330031D4A2 /* MVVMC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MVVMC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6AEA1B6244221330031D4A2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D6AEA1B8244221330031D4A2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -110,6 +120,8 @@
 		D64266D4248D38E900DEDA1E /* Checkout */ = {
 			isa = PBXGroup;
 			children = (
+				D698FD5E2516912B00B4A933 /* Auth */,
+				D698FD59251681D700B4A933 /* Product */,
 				D690B24A249500BB0079EE72 /* Streets */,
 				D690B2402493E8900079EE72 /* Cities */,
 				D690B235249039330079EE72 /* Map */,
@@ -142,6 +154,7 @@
 				D64266E6248D5C5700DEDA1E /* DeliveryMethodCell.swift */,
 				D690B23824915BBE0079EE72 /* CheckmarkCell.swift */,
 				D690B23C249161310079EE72 /* TotalInfoCell.swift */,
+				D698FD5C251688B400B4A933 /* CommonTextCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -199,6 +212,24 @@
 				D690B24F249502700079EE72 /* StreetsCoordinator.swift */,
 			);
 			path = Streets;
+			sourceTree = "<group>";
+		};
+		D698FD59251681D700B4A933 /* Product */ = {
+			isa = PBXGroup;
+			children = (
+				D698FD5A251681F900B4A933 /* ProductViewController.swift */,
+			);
+			path = Product;
+			sourceTree = "<group>";
+		};
+		D698FD5E2516912B00B4A933 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				D698FD5F2516914400B4A933 /* AuthPhoneController.swift */,
+				D698FD612516A21A00B4A933 /* AuthCodeController.swift */,
+				D698FD632516A24000B4A933 /* AuthCoordinator.swift */,
+			);
+			path = Auth;
 			sourceTree = "<group>";
 		};
 		D6AEA1AA244221330031D4A2 = {
@@ -377,12 +408,14 @@
 				D690B2492494DEB20079EE72 /* CitiesCoordinator.swift in Sources */,
 				D6AEA1CE24424C090031D4A2 /* ApplicationCoordinator.swift in Sources */,
 				D690B23D249161310079EE72 /* TotalInfoCell.swift in Sources */,
+				D698FD622516A21A00B4A933 /* AuthCodeController.swift in Sources */,
 				D690B237249039420079EE72 /* MapViewController.swift in Sources */,
 				D690B23924915BBE0079EE72 /* CheckmarkCell.swift in Sources */,
 				D64266E5248D401300DEDA1E /* CheckoutPositionCell.swift in Sources */,
 				D690B23B24915E8B0079EE72 /* ButtonFooter.swift in Sources */,
 				D64266ED248D603000DEDA1E /* FloatingLabelTextField.swift in Sources */,
 				D690B2472494DE900079EE72 /* CitiesViewModel.swift in Sources */,
+				D698FD602516914400B4A933 /* AuthPhoneController.swift in Sources */,
 				D690B24E249501520079EE72 /* StreetsViewModel.swift in Sources */,
 				D64266EF248D998300DEDA1E /* CollectionHeader.swift in Sources */,
 				D690B250249502700079EE72 /* StreetsCoordinator.swift in Sources */,
@@ -392,14 +425,17 @@
 				D65BACCA244E5798009FDAC4 /* PhotoFeedCoordinator.swift in Sources */,
 				D6AEA1CC244224C80031D4A2 /* Coordinator.swift in Sources */,
 				D64266DD248D3CF100DEDA1E /* Product.swift in Sources */,
+				D698FD5B251681F900B4A933 /* ProductViewController.swift in Sources */,
 				D690B23F2493B3700079EE72 /* CombineExtensions.swift in Sources */,
 				D6AEA1BB244221330031D4A2 /* ViewController.swift in Sources */,
 				D6AEA1B7244221330031D4A2 /* AppDelegate.swift in Sources */,
 				D65BACCC244E57A7009FDAC4 /* PhotoFeedViewModel.swift in Sources */,
+				D698FD5D251688B400B4A933 /* CommonTextCell.swift in Sources */,
 				D65BACC8244E5458009FDAC4 /* PhotoFeedController.swift in Sources */,
 				D64266E9248D601A00DEDA1E /* FilterTextValueCell.swift in Sources */,
 				D64266D6248D390E00DEDA1E /* CheckoutViewController.swift in Sources */,
 				D6AEA1B9244221330031D4A2 /* SceneDelegate.swift in Sources */,
+				D698FD642516A24000B4A933 /* AuthCoordinator.swift in Sources */,
 				D64266E1248D3D1700DEDA1E /* CheckoutPositionCellViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

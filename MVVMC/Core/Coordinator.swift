@@ -36,6 +36,7 @@ class BaseCoordinator<T>: CoordinatorProtocol {
        ///
        /// - Parameter coordinator: Coordinator to release.
        private func free<T>(coordinator: BaseCoordinator<T>) {
+        print("free coordinator: \(coordinator)")
            childCoordinators[coordinator.identifier] = nil
        }
 
@@ -48,10 +49,11 @@ class BaseCoordinator<T>: CoordinatorProtocol {
        func coordinate<T>(to coordinator: BaseCoordinator<T>) -> AnyPublisher<T, Never> {
            store(coordinator: coordinator)
            return coordinator.start()
+                .last()
                 .handleEvents(
                     receiveOutput: { [weak self] _ in
                         self?.free(coordinator: coordinator)
-                        },
+                    },
                     receiveCompletion: { _ in print("finish coordinator: \(coordinator)") },
                     receiveCancel: { print("cancel coordinator: \(coordinator)") })
                 .eraseToAnyPublisher()

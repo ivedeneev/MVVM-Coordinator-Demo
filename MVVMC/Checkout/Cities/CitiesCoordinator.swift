@@ -14,10 +14,10 @@ final class CitiesCoordinator: BaseCoordinator<City?> {
     
     override func start() -> AnyPublisher<City?, Never> {
         let vc = CitiesViewController()
-        let nc = NavigationController(rootViewController: vc)
+        let nc = ModalNavigationController(rootViewController: vc)
         let viewModel = CitiesViewModel()
         vc.viewModel = viewModel
-        let dismiss = nc.didDismiss.map { CitiesSelectResult.cancel }
+        let dismiss = nc.didDismissManually.map { CitiesSelectResult.cancel }
         
         rootViewController?.present(nc, animated: true, completion: nil)
         

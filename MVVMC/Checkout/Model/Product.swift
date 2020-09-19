@@ -39,7 +39,7 @@ struct CheckoutModel: Decodable, Hashable {
     
 }
 
-struct City: Hashable {
+struct City: Hashable, Decodable {
     let id = UUID().uuidString
     let title: String
 }
@@ -51,7 +51,7 @@ let allCities = [City(title: "Москва"),
                  City(title: "Саратов")]
 
 
-struct Street: Hashable {
+struct Street: Hashable, Decodable {
     let id = UUID().uuidString
     let title: String
 }
@@ -61,3 +61,30 @@ let allStreets = [Street(title: "Советская"),
                  Street(title: "Петровка"),
                  Street(title: "Рылеева"),
                  Street(title: "Ленинграадское шоссе")]
+
+
+struct Basket: Decodable {
+    struct Delivery: Decodable {
+        let type: DeliveryMethod
+    }
+    
+    struct PersonalData: Decodable {
+        let name: String
+        let phone: String
+    }
+    
+    let personal: PersonalData
+    let id = UUID().uuidString
+    let positions: [CheckoutPosition]
+    
+    let selectedAddress: String?
+    let selectedCity: City?
+    let selectedStreet: Street?
+    let home: String?
+    let flat: String?
+}
+
+struct Discount: Decodable {
+    let id = UUID().uuidString
+    let value: Int
+}
