@@ -18,15 +18,26 @@ final class CommonTextCell: UICollectionViewCell {
         }
     }
     
-    let titleLabel = UILabel()
+    private let titleLabel = UILabel()
+    private let disclosure = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        addSubview(disclosure)
+        disclosure.contentMode = .scaleAspectFit
+        disclosure.image = UIImage(named: "next")
+        disclosure.snp.makeConstraints { (make) in
+            make.top.bottom.equalToSuperview()
+            make.trailing.equalToSuperview().offset(-16)
+        }
+        
+        
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { (make) in
             make.top.bottom.equalToSuperview()
             make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
+            make.trailing.equalTo(disclosure).offset(-8)
         }
     }
     

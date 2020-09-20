@@ -77,12 +77,11 @@ final class CheckoutCoordinator: BaseCoordinator<Void> {
     }
     
     private func selectDiscoundAndAutorizeIfNeeded() -> AnyPublisher<DiscountFlowResult, Never> {
-        let c = AuthCoordinator(rootViewController)
+        let c = AuthCoordinator(rootViewController, promt: "Авторизуйтесь, чтобы воспользоваться вашими скидками")
         return coordinate(to: c).flatMap { result -> AnyPublisher<DiscountFlowResult, Never> in
             switch result {
             case .value:
                 return Just(.discount(.init(value: 10)))
-                    .delay(for: 0.3, scheduler: DispatchQueue.main)
                     .eraseToAnyPublisher()
                 
             case .dismiss:
@@ -177,6 +176,7 @@ enum DiscountFlowResult {
     case cancel
 }
 
+/// Typical modal flow result. Value or dismiss
 enum CommonModalFlowResult<T> {
     case value(T)
     case dismiss

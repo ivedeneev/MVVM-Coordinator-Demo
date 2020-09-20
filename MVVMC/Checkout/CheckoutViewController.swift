@@ -111,8 +111,10 @@ final class CheckoutViewController: UIViewController {
             }
         }
         
-        deliverySection.insetForSection = .init(top: 6, left: 0, bottom: 0, right: 0)
+        positionsSection.insetForSection = .init(top: 0, left: 0, bottom: 20, right: 0)
+//        deliverySection.insetForSection = .init(top: 8, left: 0, bottom: 0, right: 0)
         
+        contactSection.insetForSection = .init(top: 0, left: 0, bottom: 16, right: 0)
         contactSection.headerItem = CollectionHeaderFooterView<CollectionHeader>(item: "Контактные данные", kind: UICollectionView.elementKindSectionHeader)
         
         let name = TextSelectViewModel(id: "name", title: "Имя", text: viewModel.name, isEnabled: true)
@@ -130,6 +132,7 @@ final class CheckoutViewController: UIViewController {
             .assign(to: \.phone, on: viewModel)
             .store(in: &bag)
         
+        deliverySection.insetForSection = .init(top: 0, left: 0, bottom: 16, right: 0)
         deliverySection.headerItem = CollectionHeaderFooterView<CollectionHeader>(item: "Способ доставки", kind: UICollectionView.elementKindSectionHeader)
         deliverySection += CollectionItem<DeliveryMethodCell>(item: deliveryVm)
         
@@ -141,24 +144,24 @@ final class CheckoutViewController: UIViewController {
             }.store(in: &bag)
         
         if viewModel.deliveryMethod == .delivery {
-            let cityVm = TextSelectViewModel(title: "Город", isEnabled: false)
+            let cityVm = TextSelectViewModel(id: "city", title: "Город", isEnabled: false)
             deliverySection += CollectionItem<FilterTextValueCell>(item: cityVm)
                 .onSelect { [weak self] (_) in
                     self?.viewModel.showCitiesSelect()
                 }
             
-            let streetVm = TextSelectViewModel(title: "Улица", isEnabled: false)
+            let streetVm = TextSelectViewModel(id: "street", title: "Улица", isEnabled: false)
             deliverySection += CollectionItem<FilterTextValueCell>(item: streetVm).onSelect { [weak self] (_) in
                 self?.viewModel.showStreetsSelect()
             }
             
-            let houseVm = TextSelectViewModel(title: "Дом", text: viewModel.home, keyboardType: .numberPad, isEnabled: true)
+            let houseVm = TextSelectViewModel(id: "house", title: "Дом", text: viewModel.home, keyboardType: .numberPad, isEnabled: true)
             deliverySection += CollectionItem<FilterTextValueCell>(item: houseVm)
             
-            let flatVm = TextSelectViewModel(title: "Номер квартиры", text: viewModel.flat, keyboardType: .numberPad, isEnabled: true)
+            let flatVm = TextSelectViewModel(id: "flat", title: "Номер квартиры", text: viewModel.flat, keyboardType: .numberPad, isEnabled: true)
             deliverySection += CollectionItem<FilterTextValueCell>(item: flatVm)
             
-            let deliveryTime = TextSelectViewModel(title: "Желаемые дата и время доставки", isEnabled: false)
+            let deliveryTime = TextSelectViewModel(id: "delivery", title: "Желаемые дата и время доставки", isEnabled: false)
             deliverySection += CollectionItem<FilterTextValueCell>(item: deliveryTime)
             
             viewModel.$selectedCity
@@ -199,9 +202,10 @@ final class CheckoutViewController: UIViewController {
                 kind: UICollectionView.elementKindSectionHeader
         )
         
-        let promocode = TextSelectViewModel(title: "Промокод", isEnabled: true)
-        discountSection += CollectionItem<FilterTextValueCell>(item: promocode)
-        discountSection.lineSpacing = 8
+        discountSection.insetForSection = .init(top: 0, left: 0, bottom: 16, right: 0)
+//        let promocode = TextSelectViewModel(title: "Промокод", isEnabled: true)
+//        discountSection += CollectionItem<FilterTextValueCell>(item: promocode)
+//        discountSection.lineSpacing = 8
         let hasDiscount = false
         
         if hasDiscount {
@@ -230,10 +234,10 @@ final class CheckoutViewController: UIViewController {
             CollectionItem<CheckmarkCell>(item: vm)
                 .onSelect({ [weak self] (ip) in
                     self?.currentPaymentMethod = vm.paymentMethod
-                    self?.configure()
-//                    paymentMethods.enumerated().forEach { (el) in
-//                        el.element.isSelected = el.offset == ip.item
-//                    }
+//                    self?.configure()
+                    paymentMethods.enumerated().forEach { (el) in
+                        el.element.isSelected = el.offset == ip.item
+                    }
                 })
         }
         

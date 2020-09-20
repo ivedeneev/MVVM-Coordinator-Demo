@@ -69,7 +69,8 @@ final class TextSelectViewModel: Hashable {
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(title)
+        
     }
     
     let title: String

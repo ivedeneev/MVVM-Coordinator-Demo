@@ -12,15 +12,18 @@ import Combine
 final class AuthCoordinator: BaseCoordinator<CommonModalFlowResult<Void>> {
     
     var root: UIViewController?
+    var promt: String?
     
-    init(_ rootVc: UIViewController?) {
+    init(_ rootVc: UIViewController?, promt: String? = nil) {
         root = rootVc
+        self.promt = promt
     }
     
     override func start() -> AnyPublisher<CommonModalFlowResult<Void>, Never> {
         let phoneVc = AuthPhoneController()
         
         let navController = ModalNavigationController(rootViewController: phoneVc)
+        phoneVc.navigationItem.prompt = promt
         root?.present(
             navController,
             animated: true,

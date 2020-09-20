@@ -8,19 +8,32 @@
 
 import UIKit
 import IVCollectionKit
+import SnapKit
 
 final class CollectionHeader: UICollectionReusableView {
     private let label = UILabel()
+    private let underline = UIView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         addSubview(label)
+        label.textColor = .secondaryLabel
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4).isActive = true
-        label.leftAnchor.constraint(equalTo: leftAnchor, constant: 16).isActive = true
-        label.rightAnchor.constraint(equalTo: rightAnchor, constant: -16).isActive = true
+        label.snp.makeConstraints { (make) in
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.centerY.equalToSuperview().offset(4)
+        }
+        
+//        addSubview(underline)
+//        underline.backgroundColor = .separator
+//        underline.snp.makeConstraints { (make) in
+//            make.leading.equalToSuperview().offset(16)
+//            make.trailing.equalToSuperview().offset(-16)
+//            make.height.equalTo(0.5)
+//            make.bottom.equalToSuperview().offset(-8)
+//        }
     }
     
     required init?(coder: NSCoder) {
